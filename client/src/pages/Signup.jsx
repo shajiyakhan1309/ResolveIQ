@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
+import API_BASE_URL from "../config/api";
 
 const Signup = () => {
   const [signupMessage, setSignupMessage] = useState('')
@@ -42,7 +43,7 @@ const Signup = () => {
         `${data.firstName.trim()} ${data.lastName.trim()}`.trim()
 
       const response = await fetch(
-        'http://localhost:3000/api/auth/signup',
+        `${API_BASE_URL}/api/auth/signup`,
         {
           method: 'POST',
           headers: {

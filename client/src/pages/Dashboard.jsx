@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import API_BASE_URL from "../config/api";
 
 const menuItems = [
   { label: 'Dashboard', href: '/dashboard' },
@@ -93,7 +94,7 @@ const Dashboard = () => {
          * Fetch dashboard statistics
          */
         const dashboardResponse = await fetch(
-          'http://localhost:3000/api/dashboard',
+          `${API_BASE_URL}/api/dashboard`,
           {
             method: 'GET',
             headers: {
@@ -126,7 +127,7 @@ const Dashboard = () => {
          * Fetch employee tickets
          */
         const ticketsResponse = await fetch(
-          'http://localhost:3000/api/tickets',
+          `${API_BASE_URL}/api/tickets`,
           {
             method: 'GET',
             headers: {

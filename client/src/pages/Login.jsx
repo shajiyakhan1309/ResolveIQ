@@ -1,14 +1,10 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
+import API_BASE_URL from '../config/api'
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
-  const [isForgotPassword, setIsForgotPassword] = useState(false)
-  const [resetEmail, setResetEmail] = useState('')
-  const [resetCode, setResetCode] = useState('')
-  const [resetMessage, setResetMessage] = useState('')
-  const [isResetCodeSent, setIsResetCodeSent] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   const navigate = useNavigate()
@@ -16,7 +12,6 @@ const Login = () => {
   const {
     register,
     handleSubmit,
-    setValue,
     setError,
     clearErrors,
     formState: { errors },
@@ -24,21 +19,22 @@ const Login = () => {
     defaultValues: {
       email: '',
       password: '',
-      rememberMe: false,
     },
   })
 
+  // =====================================================
+  // LOGIN
+  // =====================================================
 
-  // Login
   const onSubmit = async (data) => {
-    const { email, password, rememberMe } = data
+    const { email, password } = data
 
     try {
       setIsLoading(true)
       clearErrors('root')
 
       const response = await fetch(
-        'http://localhost:3000/api/auth/login',
+        `${API_BASE_URL}/api/auth/login`,
         {
           method: 'POST',
           headers: {
@@ -53,31 +49,48 @@ const Login = () => {
 
       const result = await response.json()
 
-      // Backend returned an error
+      // =================================================
+      // BACKEND ERROR
+      // =================================================
+
       if (!response.ok) {
         setError('root', {
           type: 'auth',
           message:
-            result.message || 'Invalid email or password. Please try again.',
+            result.message ||
+            'Invalid email or password. Please try again.',
         })
 
         return
       }
 
-      // Make sure backend returned a token
+      // =================================================
+      // CHECK TOKEN
+      // =================================================
+
       if (!result.token) {
         setError('root', {
           type: 'server',
-          message: 'Login successful, but no authentication token was received.',
+          message:
+            'Login successful, but no authentication token was received.',
         })
 
         return
       }
 
-      // Store JWT token
-      localStorage.setItem('resolveiq-token', result.token)
+      // =================================================
+      // STORE JWT TOKEN
+      // =================================================
 
-      // Store logged-in user
+      localStorage.setItem(
+        'resolveiq-token',
+        result.token
+      )
+
+      // =================================================
+      // STORE LOGGED-IN USER
+      // =================================================
+
       if (result.user) {
         localStorage.setItem(
           'resolveiq-logged-in-user',
@@ -85,20 +98,10 @@ const Login = () => {
         )
       }
 
-      // Remember only the email
-      // Never store the password in localStorage
-      if (rememberMe) {
-        localStorage.setItem(
-          'resolveiq-remembered-user',
-          JSON.stringify({
-            email: email.trim().toLowerCase(),
-          })
-        )
-      } else {
-        localStorage.removeItem('resolveiq-remembered-user')
-      }
+      // =================================================
+      // REDIRECT ACCORDING TO ROLE
+      // =================================================
 
-      // Redirect according to role
       if (result.user?.role === 'Admin') {
         navigate('/admin/dashboard')
       } else if (result.user?.role === 'Technician') {
@@ -119,44 +122,13 @@ const Login = () => {
     }
   }
 
-  // Forgot password
-  const handleForgotPassword = (event) => {
-    event.preventDefault()
-
-    if (!resetEmail.trim()) {
-      setResetMessage('Please enter your email address.')
-      return
-    }
-
-    const emailPattern =
-      /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i
-
-    if (!emailPattern.test(resetEmail)) {
-      setResetMessage('Please enter a valid email address.')
-      return
-    }
-
-    /*
-      This is still demo functionality.
-
-      We will connect this to a real backend
-      password-reset API later.
-    */
-    const generatedCode = Math.floor(
-      100000 + Math.random() * 900000
-    ).toString()
-
-    setResetCode(generatedCode)
-    setIsResetCodeSent(true)
-
-    setResetMessage(
-      `Code sent to ${resetEmail}. Please use the code below to continue.`
-    )
-  }
-
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100">
       <div className="mx-auto max-w-7xl px-6 py-10 sm:px-8 lg:px-12">
+
+        {/* =================================================
+            HEADER
+        ================================================= */}
 
         <header className="mb-12 text-center">
           <span className="inline-flex rounded-full bg-cyan-500/15 px-4 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-cyan-300">
@@ -172,6 +144,10 @@ const Login = () => {
             designed to feel professional on every device.
           </p>
         </header>
+
+        {/* =================================================
+            LOGIN CARD
+        ================================================= */}
 
         <section className="mx-auto max-w-2xl rounded-[28px] bg-white/95 p-8 shadow-[0_30px_90px_-40px_rgba(15,23,42,0.6)] ring-1 ring-slate-200/60">
 
@@ -189,19 +165,27 @@ const Login = () => {
             </p>
           </div>
 
+          {/* =================================================
+              LOGIN FORM
+          ================================================= */}
+
           <form
             className="space-y-6"
             onSubmit={handleSubmit(onSubmit)}
           >
 
-            {/* General error */}
+            {/* General Error */}
+
             {errors.root && (
               <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
                 {errors.root.message}
               </p>
             )}
 
-            {/* Email */}
+            {/* =================================================
+                EMAIL
+            ================================================= */}
+
             <div className="space-y-2">
               <label className="block text-sm font-medium text-slate-700">
                 Email
@@ -229,7 +213,10 @@ const Login = () => {
               )}
             </div>
 
-            {/* Password */}
+            {/* =================================================
+                PASSWORD
+            ================================================= */}
+
             <div className="space-y-2">
               <label className="block text-sm font-medium text-slate-700">
                 Password
@@ -305,34 +292,10 @@ const Login = () => {
               )}
             </div>
 
-            {/* Remember me + Forgot password */}
-            <div className="flex items-center justify-between text-sm text-slate-600">
+            {/* =================================================
+                LOGIN BUTTON
+            ================================================= */}
 
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  {...register('rememberMe')}
-                  className="h-4 w-4 cursor-pointer rounded border-slate-300 text-cyan-600 focus:ring-cyan-500"
-                />
-
-                Remember me
-              </label>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setIsForgotPassword(true)
-                  setResetCode('')
-                  setResetMessage('')
-                  setIsResetCodeSent(false)
-                }}
-                className="cursor-pointer font-medium text-cyan-600 hover:text-cyan-700"
-              >
-                Forgot password?
-              </button>
-            </div>
-
-            {/* Login button */}
             <button
               type="submit"
               disabled={isLoading}
@@ -341,83 +304,10 @@ const Login = () => {
               {isLoading ? 'Signing in...' : 'Login'}
             </button>
 
-            {/* Forgot password */}
-            {isForgotPassword && (
-              <div className="rounded-2xl border border-cyan-100 bg-cyan-50 p-4 text-sm text-slate-700">
+            {/* =================================================
+                SIGNUP
+            ================================================= */}
 
-                <p className="font-semibold text-cyan-700">
-                  Reset your password
-                </p>
-
-                <div className="mt-3 space-y-3">
-                  onSubmit={handleForgotPassword}
-                  className="mt-3 space-y-3"
-                
-                  <input
-                    type="email"
-                    value={resetEmail}
-                    onChange={(event) =>
-                      setResetEmail(event.target.value)
-                    }
-                    placeholder="Enter your email"
-                    className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-200"
-                  />
-
-                  <div className="flex flex-wrap gap-3">
-
-                    <button
-                      type="submit"
-                      className="rounded-2xl bg-cyan-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-700"
-                    >
-                      Send reset code
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsForgotPassword(false)
-                        setResetMessage('')
-                        setResetEmail('')
-                        setResetCode('')
-                        setIsResetCodeSent(false)
-                      }}
-                      className="rounded-2xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-white"
-                    >
-                      Cancel
-                    </button>
-
-                  </div>
-
-                  {resetMessage && (
-                    <p
-                      className={
-                        isResetCodeSent
-                          ? 'text-cyan-700'
-                          : 'text-red-600'
-                      }
-                    >
-                      {resetMessage}
-                    </p>
-                  )}
-
-                  {isResetCodeSent && (
-                    <div className="rounded-2xl border border-cyan-200 bg-white p-3 text-sm text-slate-700">
-
-                      <p className="font-semibold text-slate-900">
-                        Your reset code
-                      </p>
-
-                      <p className="mt-1 font-mono text-lg tracking-[0.3em] text-cyan-700">
-                        {resetCode}
-                      </p>
-
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Signup */}
             <div className="text-sm text-black">
               <Link
                 to="/signup"

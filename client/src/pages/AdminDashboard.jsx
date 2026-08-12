@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import API_BASE_URL from "../config/api";
 
 // =====================================================
 // STATUS COLORS
@@ -137,7 +138,7 @@ const AdminDashboard = () => {
       const [ticketResponse, usersResponse] =
         await Promise.all([
           fetch(
-            "http://localhost:3000/api/tickets/admin/all",
+            `${API_BASE_URL}/api/tickets/admin/all`,
             {
               method: "GET",
               headers,
@@ -145,7 +146,7 @@ const AdminDashboard = () => {
           ),
 
           fetch(
-            "http://localhost:3000/api/admin/users",
+            `${API_BASE_URL}/api/admin/users`,
             {
               method: "GET",
               headers,
@@ -491,7 +492,7 @@ const AdminDashboard = () => {
 
       const response =
         await fetch(
-          `http://localhost:3000/api/admin/users/${user._id}/role`,
+          `${API_BASE_URL}/api/admin/users/${user._id}/role`,
           {
             method: "PUT",
 
@@ -597,7 +598,7 @@ const AdminDashboard = () => {
 
         const response =
           await fetch(
-            `http://localhost:3000/api/admin/users/${user._id}/status`,
+           `${API_BASE_URL}/api/admin/users/${user._id}/status`,
             {
               method: "PUT",
 
@@ -695,7 +696,7 @@ const AdminDashboard = () => {
 
         const response =
           await fetch(
-            `http://localhost:3000/api/tickets/${ticketId}/assign`,
+            `${API_BASE_URL}/api/tickets/${ticketId}/assign`,
             {
               method: "PUT",
 

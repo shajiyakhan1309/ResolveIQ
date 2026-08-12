@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
+import API_BASE_URL from "../config/api";
 
 const menuItems = [
   { label: 'Dashboard', href: '/dashboard' },
@@ -147,7 +148,7 @@ const RaiseTicket = () => {
       )
 
       const response = await fetch(
-        'http://localhost:3000/api/tickets',
+        `${API_BASE_URL}/api/tickets`,
         {
           method: 'POST',
           headers: {

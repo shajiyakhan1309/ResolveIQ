@@ -9,6 +9,8 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+import API_BASE_URL from "../config/api";
+
 // =====================================================
 // STATUS COLORS
 // =====================================================
@@ -113,7 +115,7 @@ const TechnicianDashboard = () => {
 
         const response =
           await fetch(
-            "http://localhost:3000/api/tickets/assigned",
+            `${API_BASE_URL}/api/tickets/assigned`,
             {
               method: "GET",
 

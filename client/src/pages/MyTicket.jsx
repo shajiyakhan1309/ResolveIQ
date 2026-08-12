@@ -9,6 +9,8 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+import API_BASE_URL from "../config/api";
+
 // =====================================================
 // MENU ITEMS
 // =====================================================
@@ -223,7 +225,7 @@ const MyTicket = () => {
 
         const response =
           await fetch(
-            "http://localhost:3000/api/tickets",
+            `${API_BASE_URL}/api/tickets`,
             {
               method: "GET",
 
@@ -395,7 +397,7 @@ const MyTicket = () => {
 
         const response =
           await fetch(
-            `http://localhost:3000/api/tickets/${ticketId}/close`,
+            `${API_BASE_URL}/api/tickets/${ticketId}/close`,
             {
               method: "PUT",
 

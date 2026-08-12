@@ -9,6 +9,8 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+import API_BASE_URL from "../config/api";
+
 // =====================================================
 // STATUS COLORS
 // =====================================================
@@ -237,7 +239,7 @@ const Profile = () => {
         ) {
           const response =
             await fetch(
-              "http://localhost:3000/api/admin/profile",
+              `${API_BASE_URL}/api/admin/profile`,
               {
                 method: "GET",
                 headers: {
@@ -493,7 +495,7 @@ const Profile = () => {
 
       const response =
         await fetch(
-          "http://localhost:3000/api/tickets",
+          `${API_BASE_URL}/api/tickets`,
           {
             method: "GET",
 
@@ -702,7 +704,7 @@ const Profile = () => {
 
       const response =
         await fetch(
-          "http://localhost:3000/api/admin/profile",
+          `${API_BASE_URL}/api/admin/profile`,
           {
             method: "PUT",
 
