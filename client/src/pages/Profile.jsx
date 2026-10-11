@@ -493,18 +493,24 @@ const Profile = () => {
         return;
       }
 
-      const response =
-        await fetch(
-          `${API_BASE_URL}/api/tickets`,
-          {
-            method: "GET",
+      // Use the assigned tickets endpoint for Technicians
+      const storedUser = JSON.parse(
+        localStorage.getItem(
+          "resolveiq-logged-in-user"
+        ) || "{}"
+      );
 
-            headers: {
-              Authorization:
-                `Bearer ${token}`,
-            },
-          }
-        );
+      const ticketsEndpoint =
+        storedUser?.role === "Technician"
+          ? `${API_BASE_URL}/api/tickets/assigned`
+          : `${API_BASE_URL}/api/tickets`;
+
+      const response = await fetch(ticketsEndpoint, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const contentType =
         response.headers.get(
