@@ -541,16 +541,26 @@ export const updateTicketStatus =
         });
       }
 
-      ticket.status =
-        status;
+      ticket.status = status;
 
       await ticket.save();
 
+      // Re-fetch the ticket with populated relations so the client
+      // receives `createdBy` and `assignedTo` objects (not just IDs).
+      const populatedTicket = await Ticket.findById(ticket._id)
+        .populate(
+          "createdBy",
+          "fullName email employeeId department region role"
+        )
+        .populate(
+          "assignedTo",
+          "fullName email employeeId department region role"
+        );
+
       return res.status(200).json({
         success: true,
-        message:
-          "Ticket status updated successfully.",
-        ticket,
+        message: "Ticket status updated successfully.",
+        ticket: populatedTicket,
       });
     } catch (error) {
       console.error(
